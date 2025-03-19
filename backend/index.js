@@ -285,3 +285,108 @@ app.post("/horarios", async (req, res) => {
     res.status(500).send("Erro no servidor");
   }
 });
+
+app.get("/estatisticas/admin", async (req, res) => {
+  try {
+    const alunos = await pool.query("SELECT COUNT(*) FROM alunos");
+    const professores = await pool.query("SELECT COUNT(*) FROM professores");
+    const turmas = await pool.query("SELECT COUNT(*) FROM turmas");
+    const disciplinas = await pool.query("SELECT COUNT(*) FROM disciplinas");
+
+    res.json({
+      alunos: alunos.rows[0].count,
+      professores: professores.rows[0].count,
+      turmas: turmas.rows[0].count,
+      disciplinas: disciplinas.rows[0].count,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+});
+app.get("/estatisticas/admin", async (req, res) => {
+  try {
+    const alunos = await pool.query("SELECT COUNT(*) FROM alunos");
+    const professores = await pool.query("SELECT COUNT(*) FROM professores");
+    const turmas = await pool.query("SELECT COUNT(*) FROM turmas");
+    const disciplinas = await pool.query("SELECT COUNT(*) FROM disciplinas");
+
+    res.json({
+      alunos: alunos.rows[0].count,
+      professores: professores.rows[0].count,
+      turmas: turmas.rows[0].count,
+      disciplinas: disciplinas.rows[0].count,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+});
+
+app.get("/estatisticas/professor/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const turmas = await pool.query(
+      "SELECT COUNT(*) FROM turmas WHERE professor_id = $1",
+      [id]
+    );
+    const disciplinas = await pool.query(
+      "SELECT COUNT(*) FROM disciplinas WHERE professor_id = $1",
+      [id]
+    );
+
+    res.json({
+      turmas: turmas.rows[0].count,
+      disciplinas: disciplinas.rows[0].count,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+});
+
+app.get("/estatisticas/aluno/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const notas = await pool.query(
+      "SELECT AVG(nota) FROM notas WHERE aluno_id = $1",
+      [id]
+    );
+    const faltas = await pool.query(
+      "SELECT SUM(quantidade) FROM faltas WHERE aluno_id = $1",
+      [id]
+    );
+
+    res.json({
+      media_notas: notas.rows[0].avg || 0,
+      total_faltas: faltas.rows[0].sum || 0,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+});
+
+app.get("/relatorios/alunos-por-turma", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT turmas.nome AS turma, COUNT(alunos.id) AS total_alunos FROM turmas LEFT JOIN alunos ON turmas.id = alunos.turma_id GROUP BY turmas.nome"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+});
+
+app.get("/relatorios/notas-por-disciplina", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT disciplinas.nome AS disciplina, AVG(notas.nota) AS media_notas FROM disciplinas LEFT JOIN notas ON disciplinas.id = notas.disciplina_id GROUP BY disciplinas.nome"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Erro no servidor");
+  }
+});

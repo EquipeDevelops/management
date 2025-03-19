@@ -15,6 +15,8 @@ import {
   Assignment,
   Book,
   ListAlt,
+  Schedule,
+  Assessment,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
@@ -94,8 +96,17 @@ const Sidebar = ({ userRole, onLogout }) => {
       </List>
 
       <ListItem button component={Link} to="/horario">
-        <ListItemIcon></ListItemIcon>
+        <ListItemIcon>
+          <Schedule />
+        </ListItemIcon>
         <ListItemText primary="Horário" />
+      </ListItem>
+
+      <ListItem button component={Link} to="/relatorios">
+        <ListItemIcon>
+          <Assessment />
+        </ListItemIcon>
+        <ListItemText primary="Relatórios" />
       </ListItem>
 
       <Button

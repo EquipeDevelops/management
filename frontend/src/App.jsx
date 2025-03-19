@@ -16,6 +16,8 @@ import Faltas from "./components/Faltas/Faltas";
 import Boletim from "./components/Boletim/Boletim";
 import Login from "./auth/Login";
 import Horario from "./components/Horario/Horario";
+import Dashboard from "./components/Dashboard/Dashboard";
+import Relatorios from "./components/Relatorios/Relatorios";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,7 +52,6 @@ function App() {
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
 
-        {/* Passa a userRole para o Sidebar */}
         {isAuthenticated && (
           <Sidebar userRole={userRole} onLogout={handleLogout} />
         )}
@@ -152,6 +153,27 @@ function App() {
             <Route
               path="/horario"
               element={isAuthenticated ? <Horario /> : <Navigate to="/login" />}
+            />
+
+            <Route
+              path="/dashboard"
+              element={
+                isAuthenticated ? (
+                  <Dashboard
+                    userRole={userRole}
+                    userId={userRole === "aluno" ? "studentId" : "defaultId"}
+                  />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            <Route
+              path="/relatorios"
+              element={
+                isAuthenticated ? <Relatorios /> : <Navigate to="/login" />
+              }
             />
 
             <Route path="*" element={<Navigate to="/login" />} />
